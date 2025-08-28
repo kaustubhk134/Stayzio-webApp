@@ -52,11 +52,14 @@ app.get("/listings/:id", async (req, res) => {
 });
 
 // create route
-app.post("/listings", async(req, res) => {
-    const newListing = new Listing(req.body.listing);
-    await newListing.save();
-    res.redirect("/listings");
-
+app.post("/listings", async(req, res, next) => {
+    try{
+        const newListing = new Listing(req.body.listing);
+        await newListing.save();
+        res.redirect("/listings");
+    }catch(err) {
+        next(err);
+    }
 });
 
 // edit route
@@ -94,6 +97,10 @@ app.delete("/listings/:id", async (req, res) => {
 //     console.log(`sample was saved`);
 //     res.send(`successful testing`);
 // });
+
+app.use((err, req, res, next) => {
+    res.send(`Something went wrong`)
+})
 
 app.listen(port, () => {
     console.log(`server is on port ${port}`);
